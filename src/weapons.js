@@ -147,6 +147,7 @@ export const VOICE = {
   bombPlanted() { beepSeq([660, 520, 660], .12, 'sine', .14); },
   roundStart() { beepSeq([440, 660], .1, 'triangle', .1); },
   headshot() { click(4200, .16, .05); },
+  pain() { beepSeq([220, 180], .08, 'sawtooth', .12); },
   win() { beepSeq([523, 659, 784, 1046], .12, 'triangle', .16); },
   lose() { beepSeq([400, 320, 240], .1, 'sawtooth', .18); },
   noBuy() { click(300, .12, .12); }
