@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CS:GO WEB STRIKE — de_dust2 style</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💣</text></svg>">
+  <script type="module" crossorigin src="./assets/index-i5I93Hq6.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BwGgoKPp.css">
+</head>
+<body>
+<div id="game-container">
+  <canvas id="game-canvas"></canvas>
+
+  <!-- ============ HUD ============ -->
+  <div id="hud" class="hidden">
+    <!-- top bar: timer + team scores -->
+    <div id="top-bar">
+      <div class="score-box ct"><span id="ct-name">CT</span><span class="score-num" id="ct-score">0</span></div>
+      <div id="timer-wrap"><div id="timer">1:55</div><div id="round-num">Раунд 1 / 10</div></div>
+      <div class="score-box tt"><span class="score-num" id="tt-score">0</span><span id="tt-name">T</span></div>
+    </div>
+
+    <!-- crosshair -->
+    <div id="crosshair">
+      <div class="ch-line ch-t"></div><div class="ch-line ch-b"></div>
+      <div class="ch-line ch-l"></div><div class="ch-line ch-r"></div>
+      <div id="hitmarker"></div>
+    </div>
+
+    <!-- kill feed -->
+    <div id="killfeed"></div>
+
+    <!-- damage popups container -->
+    <div id="dmg-popups"></div>
+
+    <!-- radar -->
+    <div id="radar-wrap"><canvas id="radar" width="220" height="220"></canvas><div id="radar-label">de_dust2</div></div>
+
+    <!-- buy hint -->
+    <div id="buy-hint" class="hidden">
+      <div id="buy-title">МЕНЮ ПОКУПОК [B]</div>
+      <div class="bh-row"><b>1</b> — AK-47 / M4A4 (2700$)</div>
+      <div class="bh-row"><b>2</b> — AWP (4750$)</div>
+      <div class="bh-row"><b>3</b> — Desert Eagle (700$)</div>
+      <div class="bh-row"><b>4</b> — Кевлар + Шлем (1000$)</div>
+      <div class="bh-row"><b>5</b> — Деagle + Kevlar</div>
+      <div class="bh-row dim"><b>Q</b> — нож &nbsp; <b>R</b> — перезарядка &nbsp; <b>B</b> — закрыть</div>
+    </div>
+
+    <!-- bottom HUD -->
+    <div id="bottom-hud">
+      <div id="hud-left">
+        <div class="stat-row"><span class="stat-ico">✚</span><div class="stat-val"><span id="hp">100</span><span class="stat-max">%</span></div></div>
+        <div class="stat-row"><span class="stat-ico">🛡</span><div class="stat-val"><span id="ap">0</span><span class="stat-max">%</span></div></div>
+        <div class="money-row">$<span id="money">800</span></div>
+      </div>
+
+      <div id="hud-right">
+        <div id="ammo-wrap">
+          <div id="weapon-name">AK-47</div>
+          <div class="ammo-row"><span id="ammo-mag">30</span><span class="ammo-sep">/</span><span id="ammo-reserve">90</span></div>
+          <div id="reload-bar-wrap" class="hidden"><div id="reload-bar"></div></div>
+        </div>
+        <div id="wpn-slots">
+          <div class="slot active" id="slot-pri"><span class="slot-key">1</span><span class="slot-ic">▮</span></div>
+          <div class="slot" id="slot-sec"><span class="slot-key">2</span><span class="slot-ic">▪</span></div>
+          <div class="slot" id="slot-knife"><span class="slot-key">3</span><span class="slot-ic">🔪</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- center announcer -->
+    <div id="announcer" class="hidden"></div>
+    <div id="scope-vignette" class="hidden"></div>
+    <div id="damage-flash"></div>
+    <div id="lowhp-overlay"></div>
+  </div>
+
+  <!-- ============ MAIN MENU ============ -->
+  <div id="main-menu">
+    <div class="menu-bg-glow"></div>
+    <div class="menu-panel">
+      <div id="logo">
+        <div class="logo-cs">CS<span class="logo-x">:</span>GO</div>
+        <div class="logo-sub">WEB&nbsp;STRIKE</div>
+      </div>
+      <div class="menu-map">
+        <div class="map-preview"></div>
+        <div class="map-info">
+          <div class="map-name">de_dust2</div>
+          <div class="map-desc">Заложение/обезвреживание бомбы · 5 на 5 · до 8 побед</div>
+        </div>
+      </div>
+      <button id="btn-play" class="btn btn-green">ИГРАТЬ</button>
+      <div class="menu-controls">
+        <div class="mc-col">
+          <div><kbd>W A S D</kbd> движение</div>
+          <div><kbd>Shift</kbd> тихий шаг · <kbd>Ctrl</kbd> присесть</div>
+          <div><kbd>Space</kbd> прыжок</div>
+          <div><kbd>ЛКМ / ПКМ</kbd> стрельба / прицел</div>
+        </div>
+        <div class="mc-col">
+          <div><kbd>R</kbd> перезарядка · <kbd>Q</kbd> нож</div>
+          <div><kbd>B</kbd> меню покупок</div>
+          <div><kbd>Tab</kbd> счёт · <kbd>Esc</kbd> пауза</div>
+          <div><kbd>F</kbd> фонарик? нет — <kbd>F3</kbd> FPS</div>
+        </div>
+      </div>
+      <div class="menu-foot">Flick-shot · спрей-контроль · отдача как в CS:GO · боты с ИИ</div>
+    </div>
+    <div id="loading-tip">Загрузка текстур и геометрии карты…</div>
+  </div>
+
+  <!-- ============ PAUSE ============ -->
+  <div id="pause-menu" class="overlay hidden">
+    <div class="overlay-panel">
+      <h2>ПАУЗА</h2>
+      <button id="btn-resume" class="btn">Продолжить</button>
+      <button id="btn-restart" class="btn btn-danger">Начать заново</button>
+      <div class="hint">Нажмите ESC чтобы вернуться в игру</div>
+    </div>
+  </div>
+
+  <!-- ============ ROUND END ============ -->
+  <div id="round-end" class="hidden">
+    <div id="re-banner"></div>
+    <div id="re-reason"></div>
+  </div>
+
+  <!-- ============ MATCH END ============ -->
+  <div id="match-end" class="overlay hidden">
+    <div class="overlay-panel">
+      <h2 id="me-title">ПОБЕДА</h2>
+      <div id="me-score">CT 8 : 2 T</div>
+      <div id="me-stats"></div>
+      <button id="btn-rematch" class="btn btn-green">Играть снова</button>
+    </div>
+  </div>
+
+  <!-- scoreboard -->
+  <div id="scoreboard" class="hidden">
+    <div class="sb-head"><span>Counter-Terrorists</span><span class="sb-score" id="sb-ct">0</span></div>
+    <table id="sb-table-ct"></table>
+    <div class="sb-head tt-head"><span class="sb-score" id="sb-tt">0</span><span>Terrorists</span></div>
+    <table id="sb-table-tt"></table>
+  </div>
+
+  <div id="fps-counter" class="hidden">FPS: --</div>
+  <div id="click-to-lock" class="hidden">Кликните чтобы захватить мышь</div>
+</div>
+
+</body>
+</html>

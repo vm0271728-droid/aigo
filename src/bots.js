@@ -193,11 +193,14 @@ export class Bot {
     this.health = 100; this.alive = true;
     this.state = 'idle'; this.path = []; this.target = null;
     this.deathState = null;
-    this.group.visible = true;
+    this.onGround = true;
+    this.group.visible = !this.isLocal;
+    this.group.position.copy(this.pos);
     this.group.rotation.set(0, 0, 0);
     this.group.userData.deathState = null;
     this.plantProgress = 0; this.defuseProgress = 0;
-    this.equipDefault();
+    this.kills = this.kills || 0; this.deaths = this.deaths || 0;
+    if (!this.isLocal) this.equipDefault();
   }
 
   equipDefault() {
@@ -370,18 +373,20 @@ export class Bot {
 
     // reload when empty
     const wid = this.weaponId;
-    if ((this.mag[wid] ?? 0) <= 0 && now > this.reloadEnd && def.mag !== Infinity) {
-      if (!this.reloadEnd || now > this.reloadEnd) { this.reloadEnd = now + def.reloadTime; setTimeout(() => { }, 0); }
+    if ((this.mag[wid] ?? 0) <= 0 && !this.reloadEnd && def.mag !== Infinity) {
+      this.reloadEnd = now + def.reloadTime;
     }
     if (this.reloadEnd && now >= this.reloadEnd && (this.mag[wid] ?? 0) < def.mag) {
       this.mag[wid] = def.mag; this.reloadEnd = 0;
     }
 
     // sync visual
-    this.group.position.copy(this.pos);
-    this.group.rotation.y = this.yaw + Math.PI;
-    const spd = Math.hypot(this.vel.x, this.vel.z);
-    animateCharacter(this.group, dt, spd, this.onGround, this.state === 'fight');
+    if (!this.isLocal) {
+      this.group.position.copy(this.pos);
+      this.group.rotation.y = this.yaw + Math.PI;
+      const spd = Math.hypot(this.vel.x, this.vel.z);
+      animateCharacter(this.group, dt, spd, this.onGround, this.state === 'fight');
+    }
   }
 
   tryShoot(game, now, dt) {
